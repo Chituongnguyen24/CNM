@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thêm Sản Phẩm</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>➕ Thêm sản phẩm mới</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        <input name="name" placeholder="Tên sản phẩm" required />
+        <input name="price" type="number" placeholder="Giá (VNĐ)" required />
+        <input name="quantity" type="number" placeholder="Số lượng" required />
+        
+        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Chọn ảnh từ S3:</label>
+        <select name="selectedImage" id="imageSelect" style="width: 100%; padding: 12px 15px; margin-bottom: 18px; border-radius: 8px; border: 2px solid #e0e0e0;">
+            <option value="">-- Chọn ảnh có sẵn --</option>
+            <% images.forEach(img => { %>
+                <option value="<%= img.url %>"><%= img.key %></option>
+            <% }) %>
+        </select>
+        
+        <div id="imagePreview" style="margin-bottom: 15px; text-align: center;"></div>
+        
+        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Hoặc upload ảnh mới:</label>
+        <input type="file" name="image" accept="image/*" />
+        
+        <button type="submit">✅ Thêm sản phẩm</button>
+    </form>
+
+    <a href="/products" style="margin-top: 20px; display: inline-block;">⬅️ Quay lại danh sách</a>
+</div>
+
+<script>
+document.getElementById('imageSelect').addEventListener('change', function() {
+    const url = this.value;
+    const preview = document.getElementById('imagePreview');
+    if (url) {
+        preview.innerHTML = '<img src="' + url + '" width="200" style="border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.2);">';
+    } else {
+        preview.innerHTML = '';
+    }
+});
+</script>
+</body>
+</html>

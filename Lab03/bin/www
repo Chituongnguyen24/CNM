@@ -1,0 +1,67 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+const app = require('../app');
+const debug = require('debug')('lab03:server');
+const http = require('http');
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+function normalizePort(val) {
+  const port = parseInt(val, 10);
+  if (isNaN(port)) return val;
+  if (port >= 0) return port;
+  return false;
+}
+
+const MAX_PORT_RETRIES = 10;
+let retriesLeft = MAX_PORT_RETRIES;
+
+/**
+ * Start server with auto port retry
+ */
+function startServer(portValue) {
+  const port = normalizePort(portValue);
+  app.set('port', port);
+
+  const server = http.createServer(app);
+
+  server.listen(port);
+
+  server.on('error', (error) => {
+    if (error.syscall !== 'listen') throw error;
+
+    if (error.code === 'EADDRINUSE' && retriesLeft > 0 && typeof port === 'number') {
+      console.warn(`Port ${port} is in use, trying ${port + 1}...`);
+      retriesLeft--;
+      startServer(port + 1);
+      return;
+    }
+
+    switch (error.code) {
+      case 'EACCES':
+        console.error(`Port ${port} requires elevated privileges`);
+        process.exit(1);
+      case 'EADDRINUSE':
+        console.error(`Port ${port} is already in use`);
+        process.exit(1);
+      default:
+        throw error;
+    }
+  });
+
+  server.on('listening', () => {
+    const addr = server.address();
+    debug(`Listening on port ${addr.port}`);
+    console.log(`Server running at http://localhost:${addr.port}`);
+  });
+}
+
+/**
+ * Initial port
+ */
+const initialPort = process.env.PORT || 3001;
+startServer(initialPort);

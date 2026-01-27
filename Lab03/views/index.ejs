@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+
+<h1>Danh sách sản phẩm</h1>
+
+<table border="1" cellpadding="10">
+  <tr>
+    <th>Ảnh</th>
+    <th>Tên</th>
+    <th>Giá</th>
+    <th>Số lượng</th>
+  </tr>
+
+  <% products.forEach(p => { %>
+    <tr>
+      <td>
+        <img src="<%= p.url_image %>" width="100">
+      </td>
+      <td><%= p.name %></td>
+      <td><%= p.price %></td>
+      <td><%= p.quantity %></td>
+    </tr>
+  <% }) %>
+</table>
+
+</body>
+</html>
