@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sửa Người Dùng</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<%- include('../partials/navbar') %>
+<div class="container">
+    <h1>✏️ Chỉnh sửa người dùng</h1>
+
+    <form method="post">
+        <input name="username" value="<%= user.username %>" placeholder="Tên đăng nhập" required />
+        <input name="password" type="password" placeholder="Mật khẩu mới (để trống nếu không đổi)" />
+        
+        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Vai trò:</label>
+        <select name="role" required style="width: 100%; padding: 12px 15px; margin-bottom: 18px; border-radius: 8px; border: 2px solid #e0e0e0;">
+            <option value="staff" <%= user.role === 'staff' ? 'selected' : '' %>>👤 Staff</option>
+            <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>👑 Admin</option>
+        </select>
+        
+        <button type="submit">💾 Cập nhật</button>
+    </form>
+
+    <a href="/users" style="margin-top: 20px; display: inline-block;">⬅️ Quay lại danh sách</a>
+</div>
+</body>
+</html>

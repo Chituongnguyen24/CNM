@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sản Phẩm Đã Xóa</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<%- include('../partials/navbar') %>
+<div class="container">
+    <h1>🗑️ Sản phẩm đã xóa (Soft Delete)</h1>
+    
+    <div style="background: #fff3e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
+        <strong>📝 Soft Delete là gì?</strong>
+        <p style="margin: 8px 0 0 0; color: #666;">
+            Thay vì xóa vĩnh viễn, sản phẩm được đánh dấu <code>isDeleted = true</code>. 
+            Điều này cho phép khôi phục dữ liệu và giữ lại lịch sử.
+        </p>
+    </div>
+    
+    <a href="/products" class="add-btn" style="background: linear-gradient(135deg, #4caf50, #45a049);">⬅️ Quay lại sản phẩm</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% products.forEach(p => { %>
+                <tr style="opacity: 0.7; background: #ffebee;">
+                    <td>
+                        <% if (p.url_image) { %>
+                            <img 
+                                src="<%= p.url_image %>" 
+                                width="80" 
+                                alt="<%= p.name %>"
+                                style="filter: grayscale(50%);"
+                                onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22100%22 height=%22100%22%3E%3Crect fill=%22%23ddd%22 width=%22100%22 height=%22100%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22monospace%22 font-size=%2214px%22 fill=%22%23999%22%3ENo Image%3C/text%3E%3C/svg%3E'; this.style.backgroundColor='#f0f0f0';"
+                            />
+                        <% } else { %>
+                            <span style="color: #999; font-size: 40px;">📦</span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <strong style="text-decoration: line-through; color: #999;"><%= p.name %></strong>
+                        <br><span style="font-size: 11px; color: #c62828;">🗑️ Đã xóa</span>
+                    </td>
+                    <td>
+                        <% if (p.categoryId && categoryMap[p.categoryId]) { %>
+                            <span style="padding: 4px 10px; background: #e0e0e0; color: #666; border-radius: 12px; font-size: 12px;">
+                                📁 <%= categoryMap[p.categoryId].name %>
+                            </span>
+                        <% } else { %>
+                            <span style="color: #999; font-size: 12px;">Chưa phân loại</span>
+                        <% } %>
+                    </td>
+                    <td><%= Number(p.price).toLocaleString('vi-VN') %>đ</td>
+                    <td><%= p.quantity %></td>
+                    <td>
+                        <form action="/products/restore/<%= p.id %>" method="post" style="display:inline">
+                            <button type="submit" style="background: linear-gradient(135deg, #4caf50, #45a049);" onclick="return confirm('Khôi phục sản phẩm này?')">♻️ Khôi phục</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+    
+    <% if (products.length === 0) { %>
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <p style="font-size: 48px;">✨</p>
+            <p>Không có sản phẩm nào đã bị xóa</p>
+        </div>
+    <% } %>
+</div>
+</body>
+</html>

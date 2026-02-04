@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body>
+<%- include('../partials/navbar') %>
 <div class="container">
     <h1>➕ Thêm sản phẩm mới</h1>
 
@@ -14,6 +15,14 @@
         <input name="name" placeholder="Tên sản phẩm" required />
         <input name="price" type="number" placeholder="Giá (VNĐ)" required />
         <input name="quantity" type="number" placeholder="Số lượng" required />
+        
+        <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Danh mục:</label>
+        <select name="categoryId" style="width: 100%; padding: 12px 15px; margin-bottom: 18px; border-radius: 8px; border: 2px solid #e0e0e0;">
+            <option value="">-- Chưa phân loại --</option>
+            <% categories.forEach(cat => { %>
+                <option value="<%= cat.id %>"><%= cat.name %></option>
+            <% }) %>
+        </select>
         
         <label style="display: block; margin-bottom: 5px; font-weight: 600; color: #555;">Chọn ảnh từ S3:</label>
         <select name="selectedImage" id="imageSelect" style="width: 100%; padding: 12px 15px; margin-bottom: 18px; border-radius: 8px; border: 2px solid #e0e0e0;">

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Người Dùng</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<%- include('../partials/navbar') %>
+<div class="container">
+    <h1>👥 Quản lý người dùng</h1>
+    <a href="/users/add" class="add-btn">➕ Thêm người dùng</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Ngày tạo</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% users.forEach(u => { %>
+                <tr>
+                    <td><strong><%= u.username %></strong></td>
+                    <td>
+                        <span style="
+                            padding: 4px 12px;
+                            border-radius: 20px;
+                            font-size: 12px;
+                            font-weight: 600;
+                            background: <%= u.role === 'admin' ? '#e3f2fd' : '#f3e5f5' %>;
+                            color: <%= u.role === 'admin' ? '#1565c0' : '#7b1fa2' %>;
+                        ">
+                            <%= u.role === 'admin' ? '👑 Admin' : '👤 Staff' %>
+                        </span>
+                    </td>
+                    <td><%= u.createdAt ? new Date(u.createdAt).toLocaleDateString('vi-VN') : '-' %></td>
+                    <td>
+                        <a class="action-link" href="/users/edit/<%= u.userId %>">✏️ Sửa</a>
+                        <% if (currentUser && currentUser.userId !== u.userId) { %>
+                            <form action="/users/delete/<%= u.userId %>" method="post" style="display:inline">
+                                <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa user này?')">🗑️ Xóa</button>
+                            </form>
+                        <% } %>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<%- include('../partials/navbar') %>
+<div class="container">
+    <h1>🛒 Giỏ hàng của bạn</h1>
+
+    <% if (locals.error) { %>
+        <div class="alert alert-danger">⚠️ <%= error %></div>
+    <% } %>
+
+    <% if (!cart.items || cart.items.length === 0) { %>
+        <div class="empty-cart" style="text-align: center; padding: 60px 20px;">
+            <h2 style="font-size: 4em; margin-bottom: 20px;">🛒</h2>
+            <p style="font-size: 1.2em; color: #666;">Giỏ hàng của bạn đang trống</p>
+            <a href="/products" class="btn" style="margin-top: 20px;">🛍️ Tiếp tục mua sắm</a>
+        </div>
+    <% } else { %>
+        <div class="cart-container" style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px;">
+            <!-- Danh sách sản phẩm -->
+            <div class="cart-items">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Đơn giá</th>
+                            <th>Số lượng</th>
+                            <th>Thành tiền</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% cart.items.forEach(item => { %>
+                            <tr>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <% if (item.product.url_image) { %>
+                                            <img src="<%= item.product.url_image %>" 
+                                                 alt="<%= item.product.name %>"
+                                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                                        <% } else { %>
+                                            <div style="width: 60px; height: 60px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">📦</div>
+                                        <% } %>
+                                        <div>
+                                            <strong><%= item.product.name %></strong>
+                                            <br>
+                                            <small style="color: <%= item.stockStatus.class === 'danger' ? '#c62828' : (item.stockStatus.class === 'warning' ? '#f57c00' : '#2e7d32') %>">
+                                                <%= item.stockStatus.icon %> <%= item.stockStatus.text %>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><%= item.product.price.toLocaleString('vi-VN') %>₫</td>
+                                <td>
+                                    <form action="/cart/update/<%= item.id %>" method="POST" style="display: flex; align-items: center; gap: 5px;">
+                                        <input type="number" name="quantity" value="<%= item.quantity %>" 
+                                               min="1" max="<%= item.product.quantity %>"
+                                               style="width: 60px; padding: 5px; text-align: center;">
+                                        <button type="submit" class="btn btn-small">🔄</button>
+                                    </form>
+                                </td>
+                                <td><strong><%= item.subtotal.toLocaleString('vi-VN') %>₫</strong></td>
+                                <td>
+                                    <form action="/cart/remove/<%= item.id %>" method="POST" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger btn-small" 
+                                                onclick="return confirm('Xóa sản phẩm này khỏi giỏ hàng?')">🗑️</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                    <a href="/products" class="btn btn-secondary">⬅️ Tiếp tục mua sắm</a>
+                    <form action="/cart/clear" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-danger" 
+                                onclick="return confirm('Xóa toàn bộ giỏ hàng?')">🗑️ Xóa tất cả</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Tóm tắt đơn hàng -->
+            <div class="cart-summary" style="background: #f9f9f9; padding: 25px; border-radius: 12px; height: fit-content;">
+                <h3 style="margin-bottom: 20px;">📋 Tóm tắt giỏ hàng</h3>
+                
+                <div style="border-bottom: 1px solid #ddd; padding-bottom: 15px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Số lượng sản phẩm:</span>
+                        <span><%= cart.totalItems %> sản phẩm</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Tạm tính:</span>
+                        <span><%= cart.totalAmount.toLocaleString('vi-VN') %>₫</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 1.3em; font-weight: bold; margin-bottom: 20px;">
+                    <span>Tổng cộng:</span>
+                    <span style="color: #c62828;"><%= cart.totalAmount.toLocaleString('vi-VN') %>₫</span>
+                </div>
+
+                <a href="/products" class="btn" style="width: 100%; text-align: center; padding: 15px; font-size: 1.1em;">
+                    🛍️ Tiếp tục mua sắm
+                </a>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<style>
+    .btn-small {
+        padding: 5px 10px !important;
+        font-size: 0.9em !important;
+    }
+    .btn-secondary {
+        background: #666 !important;
+    }
+    .btn-danger {
+        background: #c62828 !important;
+    }
+    .alert-danger {
+        background: #ffebee;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+</style>
+</body>
+</html>

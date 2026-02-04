@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Lý Danh Mục</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<%- include('../partials/navbar') %>
+<div class="container">
+    <h1>📁 Quản lý danh mục</h1>
+    <a href="/categories/add" class="add-btn">➕ Thêm danh mục</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Tên danh mục</th>
+                <th>Mô tả</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% categories.forEach(c => { %>
+                <tr>
+                    <td><strong><%= c.name %></strong></td>
+                    <td><%= c.description %></td>
+                    <td>
+                        <a class="action-link" href="/categories/edit/<%= c.id %>">✏️ Sửa</a>
+                        <form action="/categories/delete/<%= c.id %>" method="post" style="display:inline">
+                            <button type="submit" onclick="return confirm('Bạn chắc chắn muốn xóa danh mục này?\n\nLưu ý: Các sản phẩm thuộc danh mục sẽ KHÔNG bị xóa.')">🗑️ Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

@@ -7,17 +7,90 @@
     <link rel="stylesheet" href="/stylesheets/style.css">
 </head>
 <body>
+<%- include('../partials/navbar') %>
 <div class="container">
     <h1>🛍️ Danh sách sản phẩm</h1>
-    <a href="/products/add" class="add-btn">Thêm sản phẩm mới</a>
+    
+    <!-- Bộ lọc và tìm kiếm -->
+    <div class="filter-section" style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 25px;">
+        <form action="/products" method="GET" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end;">
+            <!-- Tìm kiếm theo tên -->
+            <div style="flex: 1; min-width: 200px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">🔍 Tìm kiếm</label>
+                <input type="text" name="search" value="<%= filters.search %>" 
+                       placeholder="Nhập tên sản phẩm..." 
+                       style="width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+            </div>
+
+            <!-- Lọc theo danh mục -->
+            <div style="min-width: 180px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">📁 Danh mục</label>
+                <select name="category" style="width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; background: white;">
+                    <option value="">Tất cả danh mục</option>
+                    <% categories.forEach(cat => { %>
+                        <option value="<%= cat.id %>" <%= filters.category === cat.id ? 'selected' : '' %>><%= cat.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+
+            <!-- Lọc theo khoảng giá -->
+            <div style="min-width: 130px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">💰 Giá từ</label>
+                <input type="number" name="minPrice" value="<%= filters.minPrice %>" 
+                       placeholder="0" min="0"
+                       style="width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+            </div>
+            <div style="min-width: 130px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: 500; color: #555;">💰 Giá đến</label>
+                <input type="number" name="maxPrice" value="<%= filters.maxPrice %>" 
+                       placeholder="∞" min="0"
+                       style="width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;">
+            </div>
+
+            <!-- Nút tìm kiếm và reset -->
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="padding: 10px 20px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500;">
+                    🔍 Tìm kiếm
+                </button>
+                <a href="/products" style="padding: 10px 20px; background: #6c757d; color: white; border-radius: 8px; text-decoration: none; font-weight: 500;">
+                    🔄 Reset
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Thông tin kết quả -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="color: #666;">
+            <% if (filters.search || filters.category || filters.minPrice || filters.maxPrice) { %>
+                Tìm thấy <strong><%= pagination.totalProducts %></strong> sản phẩm
+                <% if (filters.search) { %> với từ khóa "<strong><%= filters.search %></strong>"<% } %>
+                <% if (filters.category && categoryMap[filters.category]) { %> trong danh mục "<strong><%= categoryMap[filters.category].name %></strong>"<% } %>
+                <% if (filters.minPrice || filters.maxPrice) { %> 
+                    giá 
+                    <% if (filters.minPrice) { %>từ <strong><%= Number(filters.minPrice).toLocaleString('vi-VN') %>₫</strong><% } %>
+                    <% if (filters.maxPrice) { %> đến <strong><%= Number(filters.maxPrice).toLocaleString('vi-VN') %>₫</strong><% } %>
+                <% } %>
+            <% } else { %>
+                Tổng cộng <strong><%= pagination.totalProducts %></strong> sản phẩm
+            <% } %>
+        </div>
+        <div style="display: flex; gap: 15px;">
+            <% if (currentUser && currentUser.role === 'admin') { %>
+                <a href="/products/add" class="add-btn">➕ Thêm sản phẩm mới</a>
+                <a href="/products/deleted" class="add-btn" style="background: linear-gradient(135deg, #ff6b6b, #ee5a5a);">🗑️ Sản phẩm đã xóa</a>
+            <% } %>
+        </div>
+    </div>
 
     <table>
         <thead>
             <tr>
                 <th>Ảnh</th>
                 <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
                 <th>Giá</th>
-                <th>Số lượng</th>
+                <th>Tồn kho</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -37,18 +110,120 @@
                         <% } %>
                     </td>
                     <td><strong><%= p.name %></strong></td>
-                    <td><%= Number(p.price).toLocaleString('vi-VN') %>đ</td>
-                    <td><%= p.quantity %></td>
                     <td>
-                        <a class="action-link" href="/products/edit/<%= p.id %>">✏️ Sửa</a>
-                        <form action="/products/delete/<%= p.id %>" method="post" style="display:inline">
-                            <button type="submit">🗑️ Xóa</button>
-                        </form>
+                        <% if (p.categoryId && categoryMap[p.categoryId]) { %>
+                            <span style="padding: 4px 10px; background: #e8f5e9; color: #2e7d32; border-radius: 12px; font-size: 12px;">
+                                📁 <%= categoryMap[p.categoryId].name %>
+                            </span>
+                        <% } else { %>
+                            <span style="color: #999; font-size: 12px;">Chưa phân loại</span>
+                        <% } %>
+                    </td>
+                    <td><%= Number(p.price).toLocaleString('vi-VN') %>đ</td>
+                    <td>
+                        <% if (p.quantity === 0) { %>
+                            <span style="background: #ffebee; color: #c62828; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+                                ❌ Hết hàng
+                            </span>
+                        <% } else if (p.quantity < 5) { %>
+                            <span style="background: #fff3e0; color: #f57c00; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+                                ⚠️ Sắp hết (<%= p.quantity %>)
+                            </span>
+                        <% } else { %>
+                            <span style="background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+                                ✅ Còn <%= p.quantity %>
+                            </span>
+                        <% } %>
+                    </td>
+                    <td>
+                        <% if (currentUser && currentUser.role === 'admin') { %>
+                            <a class="action-link" href="/products/edit/<%= p.id %>">✏️ Sửa</a>
+                            <form action="/products/delete/<%= p.id %>" method="post" style="display:inline">
+                                <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">🗑️ Xóa</button>
+                            </form>
+                        <% } %>
+                        <% if (p.quantity > 0) { %>
+                            <form action="/cart/add" method="post" style="display:inline">
+                                <input type="hidden" name="productId" value="<%= p.id %>">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" style="background: #4caf50; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+                                    🛒 Thêm
+                                </button>
+                            </form>
+                        <% } %>
                     </td>
                 </tr>
             <% }) %>
         </tbody>
     </table>
+    
+    <% if (products.length === 0) { %>
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <p style="font-size: 48px;">📦</p>
+            <% if (filters.search || filters.category || filters.minPrice || filters.maxPrice) { %>
+                <p>Không tìm thấy sản phẩm phù hợp</p>
+                <a href="/products" style="color: #667eea;">← Xem tất cả sản phẩm</a>
+            <% } else { %>
+                <p>Chưa có sản phẩm nào</p>
+            <% } %>
+        </div>
+    <% } %>
+
+    <!-- Phân trang -->
+    <% if (pagination.totalPages > 1) { %>
+        <div class="pagination" style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 30px; padding: 20px 0;">
+            <% 
+                // Tạo query string cho pagination
+                const queryParams = new URLSearchParams();
+                if (filters.search) queryParams.set('search', filters.search);
+                if (filters.category) queryParams.set('category', filters.category);
+                if (filters.minPrice) queryParams.set('minPrice', filters.minPrice);
+                if (filters.maxPrice) queryParams.set('maxPrice', filters.maxPrice);
+                const baseQuery = queryParams.toString() ? '&' + queryParams.toString() : '';
+            %>
+            
+            <!-- Nút Previous -->
+            <% if (pagination.hasPrev) { %>
+                <a href="/products?page=<%= pagination.currentPage - 1 %><%= baseQuery %>" 
+                   style="padding: 10px 15px; background: #667eea; color: white; border-radius: 8px; text-decoration: none;">
+                    ← Trước
+                </a>
+            <% } else { %>
+                <span style="padding: 10px 15px; background: #e0e0e0; color: #999; border-radius: 8px;">← Trước</span>
+            <% } %>
+
+            <!-- Số trang -->
+            <% for (let i = 1; i <= pagination.totalPages; i++) { %>
+                <% if (i === pagination.currentPage) { %>
+                    <span style="padding: 10px 15px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 8px; font-weight: bold;">
+                        <%= i %>
+                    </span>
+                <% } else if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 2 && i <= pagination.currentPage + 2)) { %>
+                    <a href="/products?page=<%= i %><%= baseQuery %>" 
+                       style="padding: 10px 15px; background: #f0f0f0; color: #333; border-radius: 8px; text-decoration: none;">
+                        <%= i %>
+                    </a>
+                <% } else if (i === pagination.currentPage - 3 || i === pagination.currentPage + 3) { %>
+                    <span style="color: #999;">...</span>
+                <% } %>
+            <% } %>
+
+            <!-- Nút Next -->
+            <% if (pagination.hasNext) { %>
+                <a href="/products?page=<%= pagination.currentPage + 1 %><%= baseQuery %>" 
+                   style="padding: 10px 15px; background: #667eea; color: white; border-radius: 8px; text-decoration: none;">
+                    Sau →
+                </a>
+            <% } else { %>
+                <span style="padding: 10px 15px; background: #e0e0e0; color: #999; border-radius: 8px;">Sau →</span>
+            <% } %>
+        </div>
+        
+        <div style="text-align: center; color: #666; font-size: 14px;">
+            Trang <%= pagination.currentPage %> / <%= pagination.totalPages %> 
+            (Hiển thị <%= products.length %> / <%= pagination.totalProducts %> sản phẩm)
+        </div>
+    <% } %>
 </div>
 </body>
 </html>

@@ -1,0 +1,41 @@
+<nav style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 12px 30px; margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <a href="/products" style="color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.15); transition: background 0.3s;">
+                🛍️ Sản phẩm
+            </a>
+            <% if (currentUser) { %>
+                <a href="/cart" style="color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.15); transition: background 0.3s;">
+                    🛒 Giỏ hàng
+                </a>
+            <% } %>
+            <% if (currentUser && currentUser.role === 'admin') { %>
+                <a href="/categories" style="color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.15); transition: background 0.3s;">
+                    📁 Danh mục
+                </a>
+                <a href="/users" style="color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.15); transition: background 0.3s;">
+                    👥 Người dùng
+                </a>
+                <a href="/logs" style="color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.15); transition: background 0.3s;">
+                    📋 Logs
+                </a>
+            <% } %>
+        </div>
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <% if (currentUser) { %>
+                <span style="color: white; font-size: 14px;">
+                    <%= currentUser.role === 'admin' ? '👑' : (currentUser.role === 'staff' ? '👤' : '🛒') %> 
+                    <strong><%= currentUser.username %></strong>
+                    <span style="opacity: 0.8; font-size: 12px;">(<%= currentUser.role %>)</span>
+                </span>
+                <a href="/auth/logout" style="color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; background: rgba(255,0,0,0.3); transition: background 0.3s;">
+                    🚪 Đăng xuất
+                </a>
+            <% } else { %>
+                <a href="/auth/login" style="color: white; text-decoration: none; font-weight: 600; padding: 8px 16px; border-radius: 20px; background: rgba(255,255,255,0.15); transition: background 0.3s;">
+                    🔐 Đăng nhập
+                </a>
+            <% } %>
+        </div>
+    </div>
+</nav>

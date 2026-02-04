@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lịch sử thao tác</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<%- include('../partials/navbar') %>
+<div class="container">
+    <h1>📋 Lịch sử thao tác sản phẩm (Audit Log)</h1>
+
+    <!-- Thống kê -->
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 30px;">
+        <div style="background: #e8f5e9; padding: 15px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 1.5em; font-weight: bold; color: #2e7d32;"><%= stats.byAction?.CREATE || 0 %></div>
+            <div style="color: #2e7d32;">➕ Tạo mới</div>
+        </div>
+        <div style="background: #fff3e0; padding: 15px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 1.5em; font-weight: bold; color: #f57c00;"><%= stats.byAction?.UPDATE || 0 %></div>
+            <div style="color: #f57c00;">✏️ Cập nhật</div>
+        </div>
+        <div style="background: #ffebee; padding: 15px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 1.5em; font-weight: bold; color: #c62828;"><%= stats.byAction?.DELETE || 0 %></div>
+            <div style="color: #c62828;">🗑️ Xóa</div>
+        </div>
+        <div style="background: #e3f2fd; padding: 15px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 1.5em; font-weight: bold; color: #1976d2;"><%= stats.byAction?.RESTORE || 0 %></div>
+            <div style="color: #1976d2;">♻️ Khôi phục</div>
+        </div>
+        <div style="background: #f3e5f5; padding: 15px; border-radius: 10px; text-align: center;">
+            <div style="font-size: 1.5em; font-weight: bold; color: #7b1fa2;"><%= stats.total || 0 %></div>
+            <div style="color: #7b1fa2;">📊 Tổng</div>
+        </div>
+    </div>
+
+    <!-- Bộ lọc -->
+    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+        <a href="/logs" class="btn <%= !locals.action ? 'btn-active' : 'btn-secondary' %>">Tất cả</a>
+        <a href="/logs/action/create" class="btn btn-secondary">➕ Tạo mới</a>
+        <a href="/logs/action/update" class="btn btn-secondary">✏️ Cập nhật</a>
+        <a href="/logs/action/delete" class="btn btn-secondary">🗑️ Xóa</a>
+        <a href="/logs/action/restore" class="btn btn-secondary">♻️ Khôi phục</a>
+    </div>
+
+    <% if (!logs || logs.length === 0) { %>
+        <div style="text-align: center; padding: 60px 20px; background: #f9f9f9; border-radius: 12px;">
+            <h2 style="font-size: 3em; margin-bottom: 20px;">📋</h2>
+            <p style="font-size: 1.2em; color: #666;">Chưa có lịch sử thao tác</p>
+        </div>
+    <% } else { %>
+        <table>
+            <thead>
+                <tr>
+                    <th>Thời gian</th>
+                    <th>Thao tác</th>
+                    <th>Sản phẩm</th>
+                    <th>Người thực hiện</th>
+                    <th>Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% logs.forEach(log => { %>
+                    <tr>
+                        <td>
+                            <div><%= new Date(log.time).toLocaleDateString('vi-VN') %></div>
+                            <small style="color: #666;"><%= new Date(log.time).toLocaleTimeString('vi-VN') %></small>
+                        </td>
+                        <td>
+                            <span style="background: <%= 
+                                log.action === 'CREATE' ? '#4caf50' : 
+                                log.action === 'UPDATE' ? '#ff9800' : 
+                                log.action === 'DELETE' ? '#f44336' : 
+                                log.action === 'RESTORE' ? '#2196f3' : '#9e9e9e' 
+                            %>; color: white; padding: 4px 12px; border-radius: 15px; font-size: 0.85em;">
+                                <%= log.actionDisplay?.icon %> <%= log.actionDisplay?.text || log.action %>
+                            </span>
+                        </td>
+                        <td>
+                            <% if (log.product && log.product.name !== 'Đã xóa') { %>
+                                <a href="/products/edit/<%= log.productId %>" style="color: #1976d2;">
+                                    <%= log.product.name %>
+                                </a>
+                            <% } else { %>
+                                <span style="color: #999;">
+                                    <%= log.details?.name || log.productId.substring(0, 8) + '...' %>
+                                    <small>(đã xóa)</small>
+                                </span>
+                            <% } %>
+                        </td>
+                        <td>
+                            <strong><%= log.user?.username || 'Unknown' %></strong>
+                        </td>
+                        <td>
+                            <% if (log.action === 'UPDATE' && log.details?.before) { %>
+                                <small style="color: #666;">
+                                    Giá: <%= log.details.before.price?.toLocaleString('vi-VN') || '?' %>₫ → <%= log.details.after?.price?.toLocaleString('vi-VN') || '?' %>₫
+                                </small>
+                            <% } else if (log.action === 'CREATE' && log.details?.name) { %>
+                                <small style="color: #666;">
+                                    <%= log.details.name %> - <%= (log.details.price || 0).toLocaleString('vi-VN') %>₫
+                                </small>
+                            <% } else { %>
+                                <small style="color: #999;">-</small>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    <% } %>
+</div>
+
+<style>
+    .btn-secondary {
+        background: #666 !important;
+    }
+    .btn-active {
+        background: #1976d2 !important;
+    }
+</style>
+</body>
+</html>
