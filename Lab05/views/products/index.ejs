@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <style>
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .btn { display: inline-block; padding: 10px 20px; margin: 5px; text-decoration: none; border-radius: 5px; cursor: pointer; border: none; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-warning { background-color: #ffc107; color: black; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn:hover { opacity: 0.8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background-color: #007bff; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        tr:hover { background-color: #ddd; }
+        .actions { white-space: nowrap; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .product-image { max-width: 100px; max-height: 100px; object-fit: cover; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><%= title %></h1>
+            <a href="/products/add" class="btn btn-success">+ Thêm sản phẩm</a>
+        </div>
+
+        <% if (products && products.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Hình ảnh</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Giá</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% products.forEach(function(product) { %>
+                        <tr>
+                            <td>
+                                <% if (product.url_image) { %>
+                                    <img src="<%= product.url_image %>" alt="<%= product.name %>" class="product-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                                    <span style="display:none;">Lỗi ảnh</span>
+                                <% } else { %>
+                                    <span>Không có ảnh</span>
+                                <% } %>
+                            </td>
+                            <td><%= product.name %></td>
+                            <td><%= product.price ? product.price.toLocaleString('vi-VN') : 0 %> VNĐ</td>
+                            <td class="actions">
+                                <a href="/products/<%= product.id %>" class="btn btn-primary">Xem</a>
+                                <a href="/products/<%= product.id %>/edit" class="btn btn-warning">Sửa</a>
+                                <form action="/products/<%= product.id %>/delete" method="POST" style="display: inline;" onsubmit="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
+                                    <button type="submit" class="btn btn-danger">Xóa</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>Chưa có sản phẩm nào. <a href="/products/add">Thêm sản phẩm đầu tiên</a></p>
+        <% } %>
+
+        <p style="margin-top: 20px;"><a href="/">← Về trang chủ</a></p>
+    </div>
+</body>
+</html>

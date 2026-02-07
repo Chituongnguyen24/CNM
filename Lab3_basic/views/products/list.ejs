@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách sản phẩm</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+<h1>Danh sách sản phẩm</h1>
+
+<a href="/products/add">➕ Thêm sản phẩm</a>
+
+<table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Tên sản phẩm</th>
+        <th>Giá</th>
+        <th>Số lượng</th>
+        <th>Hành động</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% if (products.length === 0) { %>
+        <tr>
+            <td colspan="5">Không có sản phẩm</td>
+        </tr>
+    <% } %>
+
+    <% products.forEach(product => { %>
+        <tr>
+            <td><%= product.id %></td>
+            <td><%= product.name %></td>
+            <td><%= product.price %></td>
+            <td><%= product.quantity %></td>
+            <td>
+                <a href="/products/edit/<%= product.id %>">✏️ Sửa</a> |
+                <a href="/products/delete/<%= product.id %>"
+                   onclick="return confirm('Xoá sản phẩm này?')">
+                    🗑️ Xoá
+                </a>
+            </td>
+        </tr>
+    <% }) %>
+    </tbody>
+</table>
+</body>
+</html>

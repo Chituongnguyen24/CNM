@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm sản phẩm</title>
+</head>
+<body>
+<h1>Thêm sản phẩm</h1>
+
+<form action="/products/add" method="post">
+    <div>
+        <label>Tên sản phẩm:</label><br>
+        <input type="text" name="name" required>
+    </div>
+
+    <div>
+        <label>Giá:</label><br>
+        <input type="number" name="price" required>
+    </div>
+
+    <div>
+        <label>Số lượng:</label><br>
+        <input type="number" name="quantity" required>
+    </div>
+
+    <br>
+    <button type="submit">💾 Lưu</button>
+    <a href="/products">⬅️ Quay lại</a>
+</form>
+</body>
+</html>

@@ -1,7 +1,9 @@
 const products= require("../data/products")
 exports.getAllProducts=(req,res)=>{
-    res.render("product/list",{products});
+    res.render("products/list",{products});
 };
+
+
 exports.getAddForm = (req, res) => {
     res.render("products/add");
 };
