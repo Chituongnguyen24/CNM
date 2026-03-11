@@ -1,1 +1,18 @@
-.env
+*.docx
+
+# Ignore everything
+*
+
+# Allow README
+!README.md
+
+# Allow lab folders
+!lab*/
+!lab*/**
+
+# Allow ex folder
+!ex/
+!ex/**
+
+# Allow .gitignore itself
+!.gitignore
