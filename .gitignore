@@ -14,6 +14,10 @@
 !ex/
 !ex/**
 
+# Allow exam review folder
+!ÔnGK/
+!ÔnGK/**
+
 # Allow .gitignore itself
 !.gitignore
 

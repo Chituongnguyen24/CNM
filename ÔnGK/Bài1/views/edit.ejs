@@ -1,0 +1,110 @@
+<%- include('partials/header') %>
+
+<div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-gray-100 fade-in relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-full h-2 bg-amber-500"></div>
+    
+    <div class="mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
+            <i class="fas fa-edit text-amber-500"></i> Edit Product
+        </h2>
+        <p class="mt-2 text-sm text-gray-600">Update the details for <strong><%= product.name %></strong>.</p>
+    </div>
+
+    <form action="/products/edit/<%= product.id %>" method="POST" enctype="multipart/form-data" class="space-y-6">
+        <div>
+            <label for="name" class="block text-sm font-semibold leading-6 text-gray-900 mb-2">Product Name <span class="text-red-500">*</span></label>
+            <div class="relative rounded-md shadow-sm">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                    <i class="fas fa-box text-gray-400"></i>
+                </div>
+                <input type="text" name="name" id="name" required value="<%= product.name %>"
+                    class="block w-full rounded-lg border-0 py-2.5 pl-10 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6 transition-shadow transition-colors">
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-2">
+            <div>
+                <label for="price" class="block text-sm font-semibold leading-6 text-gray-900 mb-2">Price ($) <span class="text-red-500">*</span></label>
+                <div class="relative rounded-md shadow-sm">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <i class="fas fa-dollar-sign text-gray-400"></i>
+                    </div>
+                    <input type="number" step="0.01" name="price" id="price" required min="0" value="<%= product.price %>"
+                        class="block w-full rounded-lg border-0 py-2.5 pl-10 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6 transition-shadow transition-colors">
+                </div>
+            </div>
+
+            <div>
+                <label for="unit_in_stock" class="block text-sm font-semibold leading-6 text-gray-900 mb-2">Unit In Stock <span class="text-red-500">*</span></label>
+                <div class="relative rounded-md shadow-sm">
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <i class="fas fa-cubes text-gray-400"></i>
+                    </div>
+                    <input type="number" name="unit_in_stock" id="unit_in_stock" required min="0" value="<%= product.unit_in_stock %>"
+                        class="block w-full rounded-lg border-0 py-2.5 pl-10 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-amber-600 sm:text-sm sm:leading-6 transition-shadow transition-colors">
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <label for="image" class="block text-sm font-semibold leading-6 text-gray-900 mb-2">Update Product Image <span class="text-xs font-normal text-gray-500">(Leave empty to keep current image)</span></label>
+            
+            <div class="mt-2 flex justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 hover:border-amber-400 transition-colors group relative overflow-hidden h-64" id="drop-zone">
+                <!-- Current Image / Initial View -->
+                <div class="absolute inset-0 z-20 flex flex-col items-center justify-center p-4 bg-white" id="current-image-container">
+                    <img id="image-preview" src="<%= product.url_image %>" alt="Current Image" class="max-h-full max-w-full object-contain rounded-lg shadow-sm border border-gray-200">
+                    <div class="absolute bottom-4 text-center bg-black bg-opacity-70 text-white text-xs px-3 py-1.5 rounded-full backdrop-blur-sm flex items-center gap-2 group cursor-pointer hover:bg-amber-600 transition-colors" onclick="document.getElementById('image').click();">
+                         <i class="fas fa-sync-alt"></i> Change Image
+                    </div>
+                </div>
+
+                <input id="image" name="image" type="file" class="sr-only" accept="image/*" onchange="previewImage(event)">
+            </div>
+        </div>
+
+        <div class="pt-6 flex items-center justify-end gap-x-4 border-t border-gray-100 mt-6">
+            <a href="/" class="text-sm font-semibold leading-6 text-gray-600 hover:text-gray-900 px-4 py-2 hover:bg-gray-50 rounded-lg transition-colors">Cancel</a>
+            <button type="submit" class="rounded-lg bg-amber-500 px-6 py-2.5 text-sm font-semibold text-white shadow-md hover:bg-amber-600 hover:shadow-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function previewImage(event) {
+        const input = event.target;
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('image-preview').src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+    const dropZone = document.getElementById('drop-zone');
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+    function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('border-amber-500', 'bg-amber-50'), false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('border-amber-500', 'bg-amber-50'), false);
+    });
+    
+    dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if(files.length > 0) {
+            document.getElementById('image').files = files;
+            const event = new Event('change');
+            document.getElementById('image').dispatchEvent(event);
+        }
+    }, false);
+</script>
+
+<%- include('partials/footer') %>

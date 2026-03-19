@@ -1,0 +1,67 @@
+<%- include('partials/header') %>
+
+<div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden fade-in">
+    <div class="flex flex-col md:flex-row">
+        <!-- Image Section -->
+        <div class="md:w-1/2 bg-gray-50 p-8 flex items-center justify-center border-b md:border-b-0 md:border-r border-gray-100">
+            <div class="relative w-full h-80 flex items-center justify-center">
+                <img src="<%= product.url_image %>" alt="<%= product.name %>" class="max-h-full max-w-full object-contain drop-shadow-md rounded-xl">
+                <!-- Stock Badge overlay -->
+                <div class="absolute top-0 right-0">
+                    <% if (product.unit_in_stock > 10) { %>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-green-100 text-green-800 shadow-sm border border-green-200">
+                            <i class="fas fa-check-circle"></i> In Stock (<%= product.unit_in_stock %>)
+                        </span>
+                    <% } else if (product.unit_in_stock > 0) { %>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 shadow-sm border border-yellow-200">
+                            <i class="fas fa-exclamation-circle"></i> Low Stock (<%= product.unit_in_stock %>)
+                        </span>
+                    <% } else { %>
+                        <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium bg-red-100 text-red-800 shadow-sm border border-red-200">
+                            <i class="fas fa-times-circle"></i> Out of Stock
+                        </span>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Details Section -->
+        <div class="md:w-1/2 p-8 flex flex-col justify-center">
+            <div class="uppercase tracking-wide text-sm text-indigo-500 font-semibold mb-1">Product Details</div>
+            <h1 class="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl"><%= product.name %></h1>
+            
+            <div class="mt-4 flex items-center justify-between border-t border-b border-gray-100 py-4">
+                <div class="text-3xl font-bold text-gray-900">$<%= Number(product.price).toFixed(2) %></div>
+            </div>
+            
+            <div class="mt-6 flex flex-col space-y-4 text-sm text-gray-500">
+                <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg">
+                    <div class="p-2 bg-white rounded shadow-sm text-indigo-500"><i class="fas fa-fingerprint w-5 h-5 flex items-center justify-center"></i></div>
+                    <div>
+                        <span class="block text-xs font-medium text-gray-400 uppercase tracking-wider">Product ID</span>
+                        <span class="block text-gray-900 font-mono text-sm truncate max-w-[200px]" title="<%= product.id %>"><%= product.id %></span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3 bg-gray-50 p-4 rounded-lg">
+                    <div class="p-2 bg-white rounded shadow-sm text-indigo-500"><i class="fas fa-cubes w-5 h-5 flex items-center justify-center"></i></div>
+                    <div>
+                        <span class="block text-xs font-medium text-gray-400 uppercase tracking-wider">Inventory</span>
+                        <span class="block text-gray-900 font-medium"><%= product.unit_in_stock %> units available</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-8 flex items-center gap-4">
+                <a href="/" class="flex-1 bg-white border border-gray-300 rounded-lg py-3 px-4 flex items-center justify-center text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 shadow-sm transition-colors group">
+                    <i class="fas fa-arrow-left mr-2 text-gray-400 group-hover:text-gray-600"></i> Back to List
+                </a>
+                <a href="/products/edit/<%= product.id %>" class="flex-1 bg-indigo-600 border border-transparent rounded-lg py-3 px-4 flex items-center justify-center text-sm font-medium text-white hover:bg-indigo-700 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 group">
+                    <i class="fas fa-edit mr-2 text-indigo-200 group-hover:text-white"></i> Edit Product
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

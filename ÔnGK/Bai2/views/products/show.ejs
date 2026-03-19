@@ -1,0 +1,29 @@
+<%- include("../partials/header", { title: title }) %>
+
+<section class="card detail-card">
+  <h2>Chi tiết sản phẩm</h2>
+
+  <div class="detail-layout">
+    <div>
+      <% if (product.url_image) { %>
+      <img class="preview" src="<%= product.url_image %>" alt="<%= product.name %>" />
+      <% } else { %>
+      <div class="no-image-box">Không có ảnh</div>
+      <% } %>
+    </div>
+
+    <div class="detail-meta">
+      <p><strong>ID:</strong> <%= product.id %></p>
+      <p><strong>Tên:</strong> <%= product.name %></p>
+      <p><strong>Giá:</strong> <%= Number(product.price).toLocaleString("vi-VN") %> đ</p>
+      <p><strong>Tồn kho:</strong> <%= product.unit_in_stock %></p>
+    </div>
+  </div>
+
+  <div class="actions-row">
+    <a class="btn btn-warning" href="/products/<%= product.id %>/edit">Sửa</a>
+    <a class="btn btn-ghost" href="/">Quay lại</a>
+  </div>
+</section>
+
+<%- include("../partials/footer") %>
