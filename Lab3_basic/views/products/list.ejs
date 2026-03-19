@@ -15,6 +15,7 @@
     <tr>
         <th>ID</th>
         <th>Tên sản phẩm</th>
+        <th>Ảnh</th>
         <th>Giá</th>
         <th>Số lượng</th>
         <th>Hành động</th>
@@ -23,7 +24,7 @@
     <tbody>
     <% if (products.length === 0) { %>
         <tr>
-            <td colspan="5">Không có sản phẩm</td>
+            <td colspan="6">Không có sản phẩm</td>
         </tr>
     <% } %>
 
@@ -31,6 +32,13 @@
         <tr>
             <td><%= product.id %></td>
             <td><%= product.name %></td>
+            <td>
+                <% if (product.imageUrl) { %>
+                    <img src="<%= product.imageUrl %>" alt="<%= product.name %>" width="80">
+                <% } else { %>
+                    <span>Không ảnh</span>
+                <% } %>
+            </td>
             <td><%= product.price %></td>
             <td><%= product.quantity %></td>
             <td>

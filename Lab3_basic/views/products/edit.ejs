@@ -7,7 +7,7 @@
 <body>
 <h1>Chỉnh sửa sản phẩm</h1>
 
-<form action="/products/edit/<%= product.id %>" method="post">
+<form action="/products/edit/<%= product.id %>" method="post" enctype="multipart/form-data">
     <div>
         <label>Tên sản phẩm:</label><br>
         <input type="text" name="name" value="<%= product.name %>" required>
@@ -21,6 +21,20 @@
     <div>
         <label>Số lượng:</label><br>
         <input type="number" name="quantity" value="<%= product.quantity %>" required>
+    </div>
+
+    <div>
+        <label>Ảnh hiện tại:</label><br>
+        <% if (product.imageUrl) { %>
+            <img src="<%= product.imageUrl %>" alt="<%= product.name %>" width="140">
+        <% } else { %>
+            <span>Chưa có ảnh</span>
+        <% } %>
+    </div>
+
+    <div>
+        <label>Đổi ảnh sản phẩm:</label><br>
+        <input type="file" name="image" accept="image/*">
     </div>
 
     <br>

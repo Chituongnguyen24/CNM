@@ -16,3 +16,9 @@
 
 # Allow .gitignore itself
 !.gitignore
+
+# Never track local environment secrets
+**/.env
+
+# Never track dependency artifacts
+**/node_modules/

@@ -1,0 +1,19 @@
+<h1>Products</h1>
+
+<a href="/create">Add product</a>
+
+<ul>
+  <% products.forEach(p => { %>
+
+    <li>
+      <h3><%= p.name %></h3>
+
+      <img src="<%= p.image %>" width="200">
+
+      <br>
+
+      <a href="/delete/<%= p.id %>">Delete</a>
+    </li>
+
+  <% }) %>
+</ul>

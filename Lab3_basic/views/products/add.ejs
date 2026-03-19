@@ -7,7 +7,7 @@
 <body>
 <h1>Thêm sản phẩm</h1>
 
-<form action="/products/add" method="post">
+<form action="/products/add" method="post" enctype="multipart/form-data">
     <div>
         <label>Tên sản phẩm:</label><br>
         <input type="text" name="name" required>
@@ -21,6 +21,11 @@
     <div>
         <label>Số lượng:</label><br>
         <input type="number" name="quantity" required>
+    </div>
+
+    <div>
+        <label>Ảnh sản phẩm:</label><br>
+        <input type="file" name="image" accept="image/*">
     </div>
 
     <br>

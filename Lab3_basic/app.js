@@ -8,6 +8,4 @@ app.use(express.static("public"));
 const productRoutes = require("./routes/product.routes");
 app.use("/products", productRoutes);
 
-app.listen(3001, () => {
-  console.log("Server chạy tại http://localhost:3001/products");
-});
+module.exports = app;
