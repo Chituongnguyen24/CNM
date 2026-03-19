@@ -1,0 +1,24 @@
+</main>
+
+<footer class="bg-gray-800 text-white py-6 mt-12 text-center shadow-inner">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <p class="text-sm">
+            &copy; <%= new Date().getFullYear() %> Product Management. All rights reserved. Built with Node.js, Express, EJS, and DynamoDB Local.
+        </p>
+    </div>
+</footer>
+
+<script>
+    // Fade out flash messages after 5 seconds
+    setTimeout(() => {
+        const alerts = document.querySelectorAll('.fade-in[role="alert"]');
+        alerts.forEach(alert => {
+            alert.style.transition = 'opacity 0.5s ease-out';
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500);
+        });
+    }, 5000);
+</script>
+
+</body>
+</html>

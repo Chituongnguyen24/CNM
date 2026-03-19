@@ -1,0 +1,104 @@
+<%- include('partials/header') %>
+
+<div class="flex justify-between items-center mb-8 fade-in">
+    <div>
+        <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Products List</h1>
+        <p class="mt-2 text-sm text-gray-600">Manage your product inventory effectively.</p>
+    </div>
+    
+    <form action="/" method="GET" class="relative group">
+        <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <i class="fas fa-search text-gray-400 group-focus-within:text-indigo-500 transition-colors"></i>
+        </div>
+        <input type="text" name="search" id="search" placeholder="Search by name..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+            class="block w-64 rounded-full border-0 py-2.5 pl-10 pr-4 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 shadow-sm transition-shadow">
+        <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+            <a href="/" class="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-red-500">
+                <i class="fas fa-times"></i>
+            </a>
+        <% } %>
+    </form>
+</div>
+
+<div class="bg-white shadow-xl rounded-xl border border-gray-100 overflow-hidden fade-in">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Image</th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Name</th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Price</th>
+                    <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Stock</th>
+                    <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                <% if (products.length > 0) { %>
+                    <% products.forEach(function(product) { %>
+                        <tr class="hover:bg-indigo-50 transition-colors duration-200 group">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex-shrink-0 h-16 w-16 relative">
+                                    <img class="h-16 w-16 rounded-lg object-cover shadow-sm group-hover:shadow-md transition-shadow ring-1 ring-black ring-opacity-5" src="<%= product.url_image %>" alt="<%= product.name %>">
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-semibold text-gray-900"><%= product.name %></div>
+                                <div class="text-xs text-gray-500">ID: <span class="truncate w-16 inline-block align-bottom" title="<%= product.id %>"><%= product.id %></span></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-bold text-emerald-600">$<%= Number(product.price).toFixed(2) %></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <% if (product.unit_in_stock > 10) { %>
+                                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                        <%= product.unit_in_stock %> in stock
+                                    </span>
+                                <% } else if (product.unit_in_stock > 0) { %>
+                                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                        Only <%= product.unit_in_stock %> left
+                                    </span>
+                                <% } else { %>
+                                    <span class="px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                        Out of stock
+                                    </span>
+                                <% } %>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                <div class="flex items-center justify-center space-x-3">
+                                    <a href="/products/details/<%= product.id %>" class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-lg transition-colors" title="View Details">
+                                        <i class="fas fa-eye w-5 h-5 flex items-center justify-center"></i>
+                                    </a>
+                                    <a href="/products/edit/<%= product.id %>" class="text-amber-600 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 p-2 rounded-lg transition-colors" title="Edit">
+                                        <i class="fas fa-edit w-5 h-5 flex items-center justify-center"></i>
+                                    </a>
+                                    <a href="/products/delete/<%= product.id %>" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-lg transition-colors" onclick="return confirm('Are you sure you want to delete this product?');" title="Delete">
+                                        <i class="fas fa-trash-alt w-5 h-5 flex items-center justify-center"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    <% }); %>
+                <% } else { %>
+                    <tr>
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <i class="fas fa-box-open text-4xl text-gray-300 mb-4"></i>
+                                <p class="text-lg font-medium">No products found.</p>
+                                <% if (typeof searchQuery !== 'undefined' && searchQuery) { %>
+                                    <p class="text-sm text-gray-400 mt-1">Try adjusting your search query.</p>
+                                    <a href="/" class="mt-4 text-indigo-600 hover:text-indigo-800 font-medium">Clear search</a>
+                                <% } else { %>
+                                    <a href="/products/add" class="mt-4 text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-2">
+                                        <i class="fas fa-plus-circle"></i> Add your first product
+                                    </a>
+                                <% } %>
+                            </div>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
